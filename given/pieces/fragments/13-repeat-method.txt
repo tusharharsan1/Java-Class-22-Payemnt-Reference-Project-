@@ -1,0 +1,8 @@
+    // The same key is only the same payment if the order and the amount are the same too.
+    private Result repeat(Payment earlier, CreatePaymentRequest request) {
+        if (earlier.getAmount() != request.amount() || !earlier.getOrderRef().equals(request.orderRef())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "This Idempotency-Key was already used for a different payment");
+        }
+        return new Result(earlier, false);
+    }

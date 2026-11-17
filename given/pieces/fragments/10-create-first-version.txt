@@ -1,0 +1,17 @@
+    // No database transaction stays open while we wait for the gateway: three short saves.
+    public Payment create(String userId, CreatePaymentRequest request) {
+        Payment payment = repo.save(newPayment(userId, UUID.randomUUID().toString(), request));
+
+        try {
+            RazorpayGateway.Link link = gateway.createLink(payment);
+            payment.setGatewayReference(link.id());
+            payment.setPaymentUrl(link.shortUrl());
+            payment.moveTo(PaymentStatus.PENDING);
+        } catch (GatewayException e) {
+            payment.setFailureReason(e.getMessage());
+            payment.moveTo(PaymentStatus.FAILED);
+            repo.save(payment);
+            throw e;
+        }
+        return repo.save(payment);
+    }

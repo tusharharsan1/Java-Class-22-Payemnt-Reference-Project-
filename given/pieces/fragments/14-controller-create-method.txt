@@ -1,0 +1,9 @@
+    // 201 for a new payment, 200 when the same Idempotency-Key came again.
+    @PostMapping
+    public ResponseEntity<PaymentDto> create(@AuthenticationPrincipal Jwt jwt,
+                                             @RequestHeader("Idempotency-Key") @Size(min = 1, max = 100) String key,
+                                             @Valid @RequestBody CreatePaymentRequest request) {
+        PaymentService.Result result = service.create(jwt.getSubject(), key, request);
+        return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK)
+                .body(PaymentDto.from(result.payment()));
+    }

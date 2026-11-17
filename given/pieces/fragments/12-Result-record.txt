@@ -1,0 +1,3 @@
+    // created = true for a new payment, false when the same key came again.
+    public record Result(Payment payment, boolean created) {
+    }

@@ -1,0 +1,6 @@
+    public void moveTo(PaymentStatus next) {
+        if (!status.canMoveTo(next)) {
+            throw new IllegalStateException("A payment cannot move from " + status + " to " + next);
+        }
+        status = next;
+    }
